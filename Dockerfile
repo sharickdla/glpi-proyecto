@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Instalar extensiones necesarias para GLPI
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     cron \
     libpng-dev \
@@ -8,12 +8,16 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libxml2-dev \
     libzip-dev \
+    libonig-dev \
     mariadb-client \
     unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configurar e instalar extensiones PHP necesarias
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql gd xml mbstring zip opcache
 
-# Activar módulos de Apache
+# Activar mod_rewrite de Apache
 RUN a2enmod rewrite
 
 # Copiar GLPI a /var/www/html
